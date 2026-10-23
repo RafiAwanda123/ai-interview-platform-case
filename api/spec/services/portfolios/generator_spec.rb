@@ -172,5 +172,100 @@ RSpec.describe Portfolios::Generator, type: :service do
 
       expect { generator.call }.to raise_error(StandardError)
     end
+
+    it 'menolak respons dengan field hilang atau tipe root tidak valid' do
+      allow(gemini_client).to receive(:generate_content).and_return({ 'invalid_root' => 123 })
+
+      expect { generator.call }.to raise_error(StandardError)
+    end
+
+    it 'menolak respons jika configured_skills bukan array' do
+      allow(gemini_client).to receive(:generate_content).and_return({
+        'configured_skills' => 'bukan sebuah array',
+        'discovered_skills' => []
+      })
+
+      expect { generator.call }.to raise_error(StandardError)
+    end
+
+    it 'menolak respons jika item skill di dalam configured_skills bukan hash valid' do
+      allow(gemini_client).to receive(:generate_content).and_return({
+        'configured_skills' => ['bukan hash item'],
+        'discovered_skills' => []
+      })
+
+      expect { generator.call }.to raise_error(StandardError)
+    end
+  end
+
+  describe 'Cacat i: Override assessor terjaga saat regenerate' do
+    it 'mempertahankan override assessor pada skill yang sama setelah regenerasi' do
+      portfolio = create(:portfolio, session: session, generation_status: 'complete')
+      skill = create(
+        :portfolio_skill,
+        portfolio: portfolio,
+        skill_id: 'sk-pg',
+        skill_label: 'PostgreSQL Performance',
+        ai_level: 2
+      )
+
+      skill.create_assessor_override!(
+        ai_level: 2,
+        override_level: 4,
+        assessor_notes: 'Pengalaman nyata terlihat mendalam di transkrip',
+        overridden_by: 1
+      )
+
+      llm_response = {
+        'configured_skills' => [
+          {
+            'skill_id' => 'sk-pg',
+            'skill_label' => 'PostgreSQL Performance',
+            'level' => 3,
+            'confidence' => 'high',
+            'evidence' => ['Saya menambahkan composite index pada tabel orders untuk optimasi query.'],
+            'competency_summary' => 'Regenerated summary'
+          }
+        ],
+        'discovered_skills' => []
+      }
+
+      allow(gemini_client).to receive(:generate_content).and_return(llm_response)
+
+      generator.call
+
+      new_skill = portfolio.reload.portfolio_skills.find_by(skill_id: 'sk-pg')
+      expect(new_skill).to be_present
+      expect(new_skill.assessor_override).to be_present
+      expect(new_skill.assessor_override.override_level).to eq(4)
+      expect(new_skill.assessor_override.assessor_notes).to eq('Pengalaman nyata terlihat mendalam di transkrip')
+    end
+  end
+
+  describe 'Job zombie tidak menimpa hasil generasi yang lebih baru' do
+    it 'membatalkan penyimpanan jika token generasi sudah berubah' do
+      portfolio = create(:portfolio, session: session, generation_status: 'pending')
+
+      llm_response = {
+        'configured_skills' => [
+          {
+            'skill_id' => 'sk-pg',
+            'skill_label' => 'PostgreSQL Performance',
+            'level' => 3,
+            'confidence' => 'high',
+            'evidence' => ['Saya menambahkan composite index pada tabel orders untuk optimasi query.'],
+            'competency_summary' => 'Summary'
+          }
+        ],
+        'discovered_skills' => []
+      }
+
+      allow(gemini_client).to receive(:generate_content) do
+        portfolio.update_columns(generation_started_at: Time.current + 1.minute)
+        llm_response
+      end
+
+      expect { generator.call }.to raise_error(StandardError)
+    end
   end
 end

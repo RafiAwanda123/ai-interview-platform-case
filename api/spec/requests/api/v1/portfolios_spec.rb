@@ -69,14 +69,15 @@ RSpec.describe 'Api::V1::Portfolios', type: :request do
 
   describe 'POST /api/v1/sessions/:id/portfolio/regenerate' do
     context 'Cacat e: Idempotensi dan pencegahan klik ganda' do
-      it 'hanya meng-enqueue satu job saat regenerate dipanggil' do
-        create(:portfolio, session: session_record, generation_status: 'failed', generation_error: 'Previous failure')
+      it 'hanya meng-enqueue satu job saat regenerate dipanggil dan portfolio berstatus pending saat enqueue' do
+        portfolio = create(:portfolio, session: session_record, generation_status: 'failed', generation_error: 'Previous failure')
 
         expect {
           post "/api/v1/sessions/#{session_record.id}/portfolio/regenerate", headers: headers
         }.to change(PortfolioGeneratorWorker.jobs, :size).by(1)
 
         expect(response).to have_http_status(:ok)
+        expect(portfolio.reload.generation_status).to eq('pending')
 
         expect {
           post "/api/v1/sessions/#{session_record.id}/portfolio/regenerate", headers: headers
