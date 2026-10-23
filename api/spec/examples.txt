@@ -1,0 +1,24 @@
+example_id                                               | status | run_time        |
+-------------------------------------------------------- | ------ | --------------- |
+./spec/requests/api/v1/portfolio_skills_spec.rb[1:1]     | failed | 0.19673 seconds |
+./spec/requests/api/v1/portfolios_spec.rb[1:1:1:1]       | failed | 0.02271 seconds |
+./spec/requests/api/v1/portfolios_spec.rb[1:1:2:1]       | failed | 0.02222 seconds |
+./spec/requests/api/v1/portfolios_spec.rb[1:1:3:1]       | passed | 0.02486 seconds |
+./spec/requests/api/v1/portfolios_spec.rb[1:1:4:1]       | passed | 0.02617 seconds |
+./spec/requests/api/v1/portfolios_spec.rb[1:2:1:1]       | passed | 0.08294 seconds |
+./spec/services/fit_gap/engine_spec.rb[1:1]              | failed | 0.11705 seconds |
+./spec/services/fit_gap/engine_spec.rb[1:2]              | failed | 0.2628 seconds  |
+./spec/services/portfolios/generator_spec.rb[1:1:1]      | failed | 0.04268 seconds |
+./spec/services/portfolios/generator_spec.rb[1:2:1]      | failed | 0.04529 seconds |
+./spec/services/portfolios/generator_spec.rb[1:3:1]      | failed | 0.04276 seconds |
+./spec/services/portfolios/generator_spec.rb[1:4:1]      | failed | 0.10643 seconds |
+./spec/services/portfolios/generator_spec.rb[1:5:1]      | failed | 0.03702 seconds |
+./spec/services/portfolios/generator_spec.rb[1:6:1]      | failed | 0.03699 seconds |
+./spec/services/portfolios/generator_spec.rb[1:7:1]      | passed | 0.03818 seconds |
+./spec/services/portfolios/generator_spec.rb[1:7:2]      | failed | 0.04107 seconds |
+./spec/services/portfolios/generator_spec.rb[1:7:3]      | passed | 0.04355 seconds |
+./spec/services/portfolios/generator_spec.rb[1:7:4]      | passed | 0.04207 seconds |
+./spec/services/portfolios/generator_spec.rb[1:8:1]      | failed | 0.05901 seconds |
+./spec/services/portfolios/generator_spec.rb[1:9:1]      | failed | 0.04437 seconds |
+./spec/workers/portfolio_generator_worker_spec.rb[1:1:1] | passed | 0.01741 seconds |
+./spec/workers/portfolio_generator_worker_spec.rb[1:2:1] | failed | 0.01784 seconds |

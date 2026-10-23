@@ -25,7 +25,7 @@ RSpec.describe PortfolioGeneratorWorker, type: :worker do
 
   describe 'sidekiq_retries_exhausted callback' do
     it 'mengubah status menjadi failed dengan pesan aman dan tidak membocorkan PII/transkrip' do
-      sensitive_candidate_info = 'NIK: 3171234567890123 Nama: Budi'
+      sensitive_candidate_info = 'NIK: 0000000000000000 Nama: Kandidat Uji'
       raw_error = "API Error communicating with Gemini: prompt contained #{sensitive_candidate_info}"
 
       msg = {

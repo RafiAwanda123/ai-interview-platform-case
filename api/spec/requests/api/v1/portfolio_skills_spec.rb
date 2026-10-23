@@ -18,7 +18,7 @@ RSpec.describe 'Api::V1::PortfolioSkills', type: :request do
       ai_confidence: 'low'
     )
 
-    post "/api/v1/portfolio-skills/#{skill.id}/override",
+    post "/api/v1/portfolio_skills/#{skill.id}/override",
          params: {
            override: {
              override_level: 3,
@@ -33,3 +33,4 @@ RSpec.describe 'Api::V1::PortfolioSkills', type: :request do
     expect(body['override']['override_level']).to eq(3)
   end
 end
+

@@ -73,3 +73,4 @@ RSpec.describe FitGap::Engine, type: :service do
     expect(comparison['result']).to eq('match')
   end
 end
+
